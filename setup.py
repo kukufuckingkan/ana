@@ -7,6 +7,10 @@ setup(
     packages=["conda"],
     install_requires=[
         pandas,
-        pandasql
+        pandasql,
+        overloading,
+        multipledispatch
+
+
     ],
 )
