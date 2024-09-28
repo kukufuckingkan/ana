@@ -12,20 +12,15 @@ import urllib.request
 import pandas as pd
 from pandas import DataFrame,ExcelFile
 from sqlalchemy import create_engine, CursorResult,Connection,Engine,text,Sequence,Row
-#psycopg2
-# sqlalchemy
-import pandasql as ps
 import logging as log
 #from overloading import overload
 import pathlib
-import py
 #pathlib.Path or py._path.local.LocalPath
-from typing import List, Dict, Tuple,Optional
+from typing import Dict,Optional
 import urllib
-import json
 
 class Dictionary:
-    # https://github.com/kukufuckingkan/mandenkanMedia/raw/refs/heads/main/dictionary/english.xlsx
+    
     def __init__(self, bookName:str, database: Optional[Engine] = None) -> None:
         # Define the file path
         self.dictionaryGitPath = 'https://github.com/kukufuckingkan/mandenkanMedia/raw/refs/heads/main/dictionary/'
@@ -172,10 +167,11 @@ class Dictionary:
         
 if __name__ == "__main__":
     #dic.getBooksPaths()
+    englishBookName= 'english'
 
-    dicEnglish = Dictionary(bookName= 'english')
+    dicEnglish = Dictionary(bookName= englishBookName)
 
-    dicEnglish.retrivefileFromGit()
+    dicEnglish.retrivefileFromGit(englishBookName)
 
 
 
