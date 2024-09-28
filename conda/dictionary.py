@@ -8,6 +8,7 @@ Spyder Editor
 This is a temporary script file.
 @author Ana
 """
+import urllib.request
 import pandas as pd
 from pandas import DataFrame,ExcelFile
 from sqlalchemy import create_engine, CursorResult,Connection,Engine,text,Sequence,Row
@@ -20,12 +21,14 @@ import pathlib
 import py
 #pathlib.Path or py._path.local.LocalPath
 from typing import List, Dict, Tuple,Optional
-
+import urllib
+import json
 
 class Dictionary:
     # https://github.com/kukufuckingkan/mandenkanMedia/raw/refs/heads/main/dictionary/english.xlsx
     def __init__(self, bookName:str, database: Optional[Engine] = None) -> None:
         # Define the file path
+        self.dictionaryGitPath = 'https://github.com/kukufuckingkan/mandenkanMedia/raw/refs/heads/main/dictionary/'
         bookFolderPath = '/Users/moridjarakeita/Documents/Kukukan/git/ana/books/'
         self.bookPath = bookFolderPath+ bookName +'.xlsx'
         self.mappingkeys = {}
@@ -43,6 +46,22 @@ class Dictionary:
 
     def disconnect(self):
         self.database.disconnect()
+
+    def retrivefileFromGit(self,name: str) -> (ExcelFile| None):
+        url = self.dictionaryGitPath + name + '.xlsx'
+
+        # Make the GET request
+        try:
+            with urllib.request.urlopen(url) as response:
+                # Read the response data
+                data = response.read()
+                df = pd.ExcelFile(data)
+                return df
+
+        except urllib.error.URLError as e:
+            print(f"Failed to fetch data: {e.reason}")        
+
+        return None   
 
     def queryFindText(self,param: str) -> CursorResult:
         query = text("select * from word where text = :param")
@@ -155,6 +174,11 @@ if __name__ == "__main__":
     #dic.getBooksPaths()
 
     dicEnglish = Dictionary(bookName= 'english')
+
+    dicEnglish.retrivefileFromGit()
+
+
+
     dicNko = Dictionary(bookName= 'ߒߞߏ')
     bookEnglish = dicEnglish.retriveFile()
     bookNko = dicNko.retriveFile()   
