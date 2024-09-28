@@ -8,7 +8,8 @@ setup(
     author_email='keita.kukukhan@gmail.com',    
     packages=["conda"],
     install_requires=[
-        pandas,
-        sqlalchemy
+        'pandas',
+        'sqlalchemy'
     ],
+    python_requires='>=3.6'
 )
