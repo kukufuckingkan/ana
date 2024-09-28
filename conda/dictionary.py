@@ -18,17 +18,13 @@ import pathlib
 #pathlib.Path or py._path.local.LocalPath
 from typing import Dict,Optional
 import urllib
-from PIL import Image
+from PIL import Image, ImageFile
 import io
 
 class Dictionary:
     
     def __init__(self, bookName:str, database: Optional[Engine] = None) -> None:
-        # Define the file path
-
         self.dictionaryGitPath = 'https://github.com/kukufuckingkan/mandenkanMedia/raw/refs/heads/main/'
-        bookFolderPath = '/Users/moridjarakeita/Documents/Kukukan/git/ana/books/'
-        self.bookPath = bookFolderPath+ bookName +'.xlsx'
         self.mappingkeys = {}
         
         lowerBookName = bookName.lower()
@@ -45,60 +41,49 @@ class Dictionary:
     def disconnect(self):
         self.database.disconnect()
 
-    def retriveGitAsset(self,assetName: str,folderName: str, subFolder: None| str, extension:str) -> (ExcelFile| None):
-        url = ''
-
-        if not subFolder:
-            url = self.dictionaryGitPath + folderName +'/' + assetName
-        else:
-            url = self.dictionaryGitPath + folderName +'/' + subFolder + '/' + assetName
-
-        if extension:
-            url + '.' + extension
+    def retriveGitAsset(self,assetName:None| str,folderName: str, subFolder: str, extension:None| str) -> any:
+        url = self.dictionaryGitPath + folderName +'/' + subFolder + '/'
 
         if folderName == 'dictionary':
-            if extension:
-            # Make the GET request
-                try:
-                    with urllib.request.urlopen(url) as response:
-                        # Read the response data
-                        data = response.read()
+            match subFolder:
+                case 'english':
+                    if assetName and extension:
+                        url += assetName + '.' + extension
+                        data = self.getAsset(url=url)
                         df = pd.ExcelFile(data)
                         return df
+                    else:
+                        # fetch all items in subfolder
+                        return None
+                        
+                case 'ߣߞߏ':
+                    return None
+                case _:
+                    return None
 
-                except urllib.error.URLError as e:
-                    print(f"Failed to fetch data: {e.reason}")
-            else:
-                # get all assets in folder  
-                x = 2
-
-        elif subFolder == 'image':
-            if not extension:
-                # get all files the folder or subfolder
-                return None
-            el
-                                  
-
+        elif folderName == 'image':
+            match subFolder:
+                case 'animal':
+                    if assetName and extension:
+                        url += assetName + '.' + extension
+                        data = self.getAsset(url=url)
+                        image = Image.open(data)
+                        return image
+                    else:
+                        return None
+                        
         return None
     
-    def getAsset(self,url,type: str):
+    def getAsset(self,url) -> bytes:
 
         try:
             with urllib.request.urlopen(url) as response:
                 # Read the response data
                 data = response.read()
-                if type == 'excel':
-
-                    df = pd.ExcelFile(data)
-                    return df
-                elif type == 'img':
-                    img = Image.open(io.BytesIO(data))
-                    img.show()
-                    return img
+                return io.BytesIO(data)
 
         except urllib.error.URLError as e:
             print(f"Failed to fetch data: {e.reason}")        
-
 
 
     def queryFindText(self,param: str) -> CursorResult:
@@ -206,13 +191,9 @@ if __name__ == "__main__":
     nkoBookName= 'english'
 
     dicEnglish = Dictionary(bookName= englishBookName)
-   # englisgBook = dicEnglish.retriveGitAsset(assetName=englishBookName,folderName='dictionary')
-    url = 'https://github.com/kukufuckingkan/mandenkanMedia/raw/refs/heads/main/image/animal/10.jpg'
-    aninals = dicEnglish.getAsset(url=url,type='img')
+    englisgBook = dicEnglish.retriveGitAsset(assetName=englishBookName,folderName='dictionary',subFolder='english')
+  
 
-
-
-    
    # englishDb = dicEnglish.createDatabases(englisgBook,'english')
    # ߒߞߏߘߓ=dicNko.createDatabases(bookNko,'ߒߞߏ')  
 
