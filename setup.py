@@ -9,7 +9,8 @@ setup(
     packages=["conda"],
     install_requires=[
         'pandas',
-        'sqlalchemy'
+        'sqlalchemy',
+        'Pillow'
     ],
     python_requires='>=3.6'
 )

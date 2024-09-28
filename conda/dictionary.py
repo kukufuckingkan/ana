@@ -18,12 +18,15 @@ import pathlib
 #pathlib.Path or py._path.local.LocalPath
 from typing import Dict,Optional
 import urllib
+from PIL import Image
+import io
 
 class Dictionary:
     
     def __init__(self, bookName:str, database: Optional[Engine] = None) -> None:
         # Define the file path
-        self.dictionaryGitPath = 'https://github.com/kukufuckingkan/mandenkanMedia/raw/refs/heads/main/dictionary/'
+
+        self.dictionaryGitPath = 'https://github.com/kukufuckingkan/mandenkanMedia/raw/refs/heads/main/'
         bookFolderPath = '/Users/moridjarakeita/Documents/Kukukan/git/ana/books/'
         self.bookPath = bookFolderPath+ bookName +'.xlsx'
         self.mappingkeys = {}
@@ -42,21 +45,61 @@ class Dictionary:
     def disconnect(self):
         self.database.disconnect()
 
-    def retrivefileFromGit(self,name: str) -> (ExcelFile| None):
-        url = self.dictionaryGitPath + name + '.xlsx'
+    def retriveGitAsset(self,assetName: str,folderName: str, subFolder: None| str, extension:str) -> (ExcelFile| None):
+        url = ''
 
-        # Make the GET request
+        if not subFolder:
+            url = self.dictionaryGitPath + folderName +'/' + assetName
+        else:
+            url = self.dictionaryGitPath + folderName +'/' + subFolder + '/' + assetName
+
+        if extension:
+            url + '.' + extension
+
+        if folderName == 'dictionary':
+            if extension:
+            # Make the GET request
+                try:
+                    with urllib.request.urlopen(url) as response:
+                        # Read the response data
+                        data = response.read()
+                        df = pd.ExcelFile(data)
+                        return df
+
+                except urllib.error.URLError as e:
+                    print(f"Failed to fetch data: {e.reason}")
+            else:
+                # get all assets in folder  
+                x = 2
+
+        elif subFolder == 'image':
+            if not extension:
+                # get all files the folder or subfolder
+                return None
+            el
+                                  
+
+        return None
+    
+    def getAsset(self,url,type: str):
+
         try:
             with urllib.request.urlopen(url) as response:
                 # Read the response data
                 data = response.read()
-                df = pd.ExcelFile(data)
-                return df
+                if type == 'excel':
+
+                    df = pd.ExcelFile(data)
+                    return df
+                elif type == 'img':
+                    img = Image.open(io.BytesIO(data))
+                    img.show()
+                    return img
 
         except urllib.error.URLError as e:
             print(f"Failed to fetch data: {e.reason}")        
 
-        return None   
+
 
     def queryFindText(self,param: str) -> CursorResult:
         query = text("select * from word where text = :param")
@@ -137,14 +180,6 @@ class Dictionary:
     def query(mapping: dict):
         return
     
-    def getBooksPaths(self):
-        currPath =  pathlib.Path('.')
-        bookPath = currPath / '..'
-        absolutePath = bookPath.resolve()
-        dir = absolutePath.iterdir()
-        return
-    
-    
 
 
     def readFile(self) -> DataFrame:
@@ -168,19 +203,18 @@ class Dictionary:
 if __name__ == "__main__":
     #dic.getBooksPaths()
     englishBookName= 'english'
+    nkoBookName= 'english'
 
     dicEnglish = Dictionary(bookName= englishBookName)
+   # englisgBook = dicEnglish.retriveGitAsset(assetName=englishBookName,folderName='dictionary')
+    url = 'https://github.com/kukufuckingkan/mandenkanMedia/raw/refs/heads/main/image/animal/10.jpg'
+    aninals = dicEnglish.getAsset(url=url,type='img')
 
-    dicEnglish.retrivefileFromGit(englishBookName)
 
 
-
-    dicNko = Dictionary(bookName= 'ߒߞߏ')
-    bookEnglish = dicEnglish.retriveFile()
-    bookNko = dicNko.retriveFile()   
     
-    englishDb =dicEnglish.createDatabases(bookEnglish,'english')
-    ߒߞߏߘߓ=dicNko.createDatabases(bookNko,'ߒߞߏ')  
+   # englishDb = dicEnglish.createDatabases(englisgBook,'english')
+   # ߒߞߏߘߓ=dicNko.createDatabases(bookNko,'ߒߞߏ')  
 
     cur = dicEnglish.queryFindText('ka')
     rows = dicEnglish.getRows(cur)
