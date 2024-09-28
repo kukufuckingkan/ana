@@ -36,4 +36,4 @@ jobs:
         twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
       env:
         TWINE_USERNAME: "__token__"  # Use the GitHub actor (username)
-        TWINE_PASSWORD: ${{ secrets.PYPI_ANA_API_TOKEN }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
