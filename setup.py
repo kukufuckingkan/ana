@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="moril",
+    name="ana",
     version="0.0.1",
     description='A short description of your package',
     author='Ana Keita',
