@@ -6,7 +6,7 @@ setup(
     description='A short description of your package',
     author='Ana Keita',
     author_email='keita.kukukhan@gmail.com',    
-    packages=["conda"],
+    packages=['conda','memory','query','alia'],
     install_requires=[
         'pandas',
         'sqlalchemy',
